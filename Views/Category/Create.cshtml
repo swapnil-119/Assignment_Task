@@ -1,0 +1,35 @@
+﻿@model NimapTask.Models.Category
+
+@{
+    ViewData["Title"] = "Create Category";
+}
+
+<h1>Create Category</h1>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+@if (ViewBag.Success != null)
+{
+    <div class="alert alert-success">@ViewBag.Success</div>
+}
+
+<form method="post" action="/Category/Create">
+    <div class="form-group mb-3">
+        <label for="CategoryName">Category Name:</label>
+        <input type="text" id="CategoryName" name="CategoryName" class="form-control" value="@Model?.CategoryName" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a href="/Category" class="btn btn-secondary">Cancel</a>
+</form>
+
+<script>
+    // Add some JavaScript to debug
+    document.querySelector('form').addEventListener('submit', function(e) {
+        console.log('Form submitted');
+        console.log('Category Name:', document.getElementById('CategoryName').value);
+    });
+</script>

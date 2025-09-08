@@ -1,0 +1,45 @@
+﻿@model NimapTask.Models.Product
+
+@{
+    ViewData["Title"] = "Create Product";
+}
+
+<h1>Create Product</h1>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<form method="post" action="/Product/Create">
+    <div class="form-group mb-3">
+        <label for="ProductName">Product Name:</label>
+        <input type="text" id="ProductName" name="ProductName" class="form-control" value="@Model?.ProductName" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="CategoryId">Category:</label>
+        <select id="CategoryId" name="CategoryId" class="form-control">
+            <option value="">Please select a category</option>
+            @if (ViewBag.CategoryId != null)
+            {
+                @foreach (var item in (SelectList)ViewBag.CategoryId)
+                {
+                    <option value="@item.Value" selected="@item.Selected">@item.Text</option>
+                }
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a href="/Product" class="btn btn-secondary">Cancel</a>
+</form>
+
+<script>
+    // Add some JavaScript to debug
+    document.querySelector('form').addEventListener('submit', function(e) {
+        console.log('Product Form submitted');
+        console.log('Product Name:', document.getElementById('ProductName').value);
+        console.log('Category ID:', document.getElementById('CategoryId').value);
+    });
+</script>

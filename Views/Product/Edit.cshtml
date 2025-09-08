@@ -1,0 +1,46 @@
+﻿@model NimapTask.Models.Product
+
+@{
+    ViewData["Title"] = "Edit Product";
+}
+
+<h1>Edit Product</h1>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<form method="post" action="/Product/Edit/@Model.ProductId">
+    <input type="hidden" name="ProductId" value="@Model.ProductId" />
+
+    <div class="form-group mb-3">
+        <label for="ProductName">Product Name:</label>
+        <input type="text" id="ProductName" name="ProductName" class="form-control" value="@Model.ProductName" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="CategoryId">Category:</label>
+        <select id="CategoryId" name="CategoryId" class="form-control">
+            @if (ViewBag.CategoryId != null)
+            {
+                @foreach (var item in (SelectList)ViewBag.CategoryId)
+                {
+                    <option value="@item.Value" selected="@item.Selected">@item.Text</option>
+                }
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a href="/Product" class="btn btn-secondary">Cancel</a>
+</form>
+
+<script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+        console.log('Product Edit form submitted');
+        console.log('Product ID:', document.querySelector('[name="ProductId"]').value);
+        console.log('Product Name:', document.getElementById('ProductName').value);
+        console.log('Category ID:', document.getElementById('CategoryId').value);
+    });
+</script>

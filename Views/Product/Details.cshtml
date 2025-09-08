@@ -1,0 +1,25 @@
+﻿@model NimapTask.Models.Product
+
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<h1>Product Details</h1>
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">Product ID</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.ProductId)</dd>
+        <dt class="col-sm-2">Product Name</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.ProductName)</dd>
+        <dt class="col-sm-2">Category ID</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.CategoryId)</dd>
+        <dt class="col-sm-2">Category Name</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Category.CategoryName)</dd>
+    </dl>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.ProductId" class="btn btn-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>
