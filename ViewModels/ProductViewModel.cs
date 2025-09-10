@@ -10,7 +10,7 @@
 
     public class ProductListViewModel
     {
-        public List<ProductViewModel> Products { get; set; }
+        public List<ProductViewModel> Products { get; set; } = new List<ProductViewModel>();
         public int CurrentPage { get; set; }
         public int TotalPages { get; set; }
         public int TotalRecords { get; set; }

@@ -20,14 +20,24 @@ namespace NimapTask.Controllers
         // GET: Product
         public async Task<IActionResult> Index(int page = 1)
         {
-            var totalRecords = await _context.Products.CountAsync();
-            var totalPages = (int)Math.Ceiling((double)totalRecords / PageSize);
+            const int pageSize = 10;
 
-            // Server-side pagination
+            // Ensure page is at least 1
+            if (page < 1) page = 1;
+
+            // Get total count for pagination calculations
+            var totalRecords = await _context.Products.CountAsync();
+            var totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+
+            // Ensure page doesn't exceed total pages
+            if (page > totalPages && totalPages > 0) page = totalPages;
+
+            // Server-side pagination with Include for Category data
             var products = await _context.Products
                 .Include(p => p.Category)
-                .Skip((page - 1) * PageSize)
-                .Take(PageSize)
+                .OrderBy(p => p.ProductId) // Important: Add ordering for consistent pagination
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(p => new ProductViewModel
                 {
                     ProductId = p.ProductId,
@@ -43,7 +53,7 @@ namespace NimapTask.Controllers
                 CurrentPage = page,
                 TotalPages = totalPages,
                 TotalRecords = totalRecords,
-                PageSize = PageSize
+                PageSize = pageSize
             };
 
             return View(viewModel);
@@ -75,7 +85,7 @@ namespace NimapTask.Controllers
             var categories = await _context.Categories.ToListAsync();
             ViewBag.CategoryId = new SelectList(categories, "CategoryId", "CategoryName");
             return View();
-        
+
         }
 
         // POST: Product/Create
@@ -212,6 +222,63 @@ namespace NimapTask.Controllers
         private bool ProductExists(int id)
         {
             return _context.Products.Any(e => e.ProductId == id);
+        }
+
+        // ADD THIS METHOD - Temporary method to create test data for pagination testing
+        public async Task<IActionResult> CreateTestData()
+        {
+            try
+            {
+                // Ensure we have categories first
+                var categories = await _context.Categories.ToListAsync();
+                if (categories.Count == 0)
+                {
+                    // Create some test categories
+                    var testCategories = new List<Category>
+                    {
+                        new Category { CategoryName = "Electronics" },
+                        new Category { CategoryName = "Books" },
+                        new Category { CategoryName = "Clothing" },
+                        new Category { CategoryName = "Sports" },
+                        new Category { CategoryName = "Food" }
+                    };
+
+                    _context.Categories.AddRange(testCategories);
+                    await _context.SaveChangesAsync();
+                    categories = await _context.Categories.ToListAsync();
+                }
+
+                // Create test products if we have less than 25
+                var existingProductCount = await _context.Products.CountAsync();
+                if (existingProductCount < 25)
+                {
+                    var testProducts = new List<Product>();
+                    var random = new Random();
+
+                    for (int i = existingProductCount + 1; i <= 30; i++)
+                    {
+                        var randomCategory = categories[random.Next(categories.Count)];
+                        testProducts.Add(new Product
+                        {
+                            ProductName = $"Test Product {i}",
+                            CategoryId = randomCategory.CategoryId
+                        });
+                    }
+
+                    _context.Products.AddRange(testProducts);
+                    await _context.SaveChangesAsync();
+                }
+
+                return Json(new
+                {
+                    success = true,
+                    message = $"Test data created successfully! Total products: {await _context.Products.CountAsync()}"
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
         }
     }
 }
